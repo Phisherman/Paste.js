@@ -22,9 +22,7 @@
 		<a href = "" ng-click="showOrHideStatsBox()"><i class="fa fa-bar-chart-o"></i> Stats</a>
 		<a href = "" ng-click="showOrHideInfoBox()"><i class="fa fa-info"></i> Info</a>
 	</div>
-	<div id ="content">
-		<textarea ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click ="hideDownloadBox()" ng-model="DocumentMeta.Content" ng-change="setTitle()" ></textarea>
-	</div>
+	<textarea auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click ="hideDownloadBox()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here" ></textarea>
 	<div id="downloadBox">
 		<h3>Download this Pad</h3>
 		<p id ="quote">You can share this file using following links. 
