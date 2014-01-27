@@ -7,7 +7,7 @@ myApp.controller('ServiceController', function ($scope, $http) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.0.4 beta"
+        VERSION: "1.0.5 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
@@ -31,34 +31,62 @@ myApp.controller('ServiceController', function ($scope, $http) {
         getTicks: "?task=0x4",
         getStats: "?task=0x3"
     };
+    //Tooltips
+    $scope.tooltip = {
+        information: false,
+        error: false,
+        download: false,
+        statistics: false
+    };
+    $scope.resetTooltips = function () {
+        $scope.tooltip.information = false;
+        $scope.tooltip.error = false;
+        $scope.tooltip.download = false;
+        $scope.tooltip.statistics = false;
+    }
+    $scope.showTooltip = function (name) {
+        if (name) {
+            $scope.resetTooltips();
+            $scope.tooltip[name] = true;
+        }
+        var width = jQuery("div#parentNav").width();
+        jQuery("#tooltip").css("width", width);
+        jQuery("#tooltip").slideDown(300);
+    };
+    $scope.hideTooltip = function () {
+        $scope.resetTooltips();
+        jQuery("#tooltip").slideUp(300);
+    };
     $scope.refreshTitle = function (newname) {
         $scope.DocumentMeta.Title = newname;
     }
-    $scope.showOrHideDownloadBox = function () {
+    $scope.toggleDownloadBox = function () {
         if ($scope.DocumentMeta.isSaved === false && $scope.DocumentMeta.isReadOnly === false) {
             console.log("store isn't saved");
             if (!$scope.storePad()) {
-                jQuery("#errorBox").fadeIn(1400, function () {
-                    jQuery("#errorBox").delay(4000);
-                    jQuery("#errorBox").fadeOut(1400);
-                });
+                $scope.showTooltip("error");
+                //jQuery("#errorBox").fadeIn(1400, function () {
+                //    jQuery("#errorBox").delay(4000);
+                //    jQuery("#errorBox").fadeOut(1400);
+                //});
                 return;
             }
         }
-        if ($scope.isBoxOpen) {
-            jQuery("#downloadBox").fadeOut();
-            $scope.isBoxOpen = false;
-        }
-        else {
-            jQuery("#downloadBox").fadeIn();
-            $scope.isBoxOpen = true;
-        }
+        if (!$scope.tooltip.download)
+            $scope.showTooltip("download");
+        else
+            $scope.hideTooltip();
+        //if ($scope.isBoxOpen) {
+        //    jQuery("#downloadBox").fadeOut();
+        //    $scope.isBoxOpen = false;
+        //}
+        //else {
+        //    jQuery("#downloadBox").fadeIn();
+        //    $scope.isBoxOpen = true;
+        //}
     }
     $scope.hideDownloadBox = function () {
-        jQuery("#downloadBox").fadeOut();
-        jQuery("#InfoBox").fadeOut();
-        jQuery("#StatusBox").fadeOut();
-        $scope.isBoxOpen = false;
+        $scope.resetTooltips();
         $scope.hideStatus();
     }
     $scope.storePad = function () {
@@ -136,8 +164,9 @@ myApp.controller('ServiceController', function ($scope, $http) {
     $scope.setTitle = function () {
         if ($scope.DocumentMeta.Content === null) {
             $scope.DocumentMeta.ErrorMessage = "The pad is not existing";
-            jQuery("#errorBox").fadeIn(1400, function () {
-            });
+            $scope.showTooltip("error");
+            //jQuery("#errorBox").fadeIn(1400, function () {
+            //});
             return;
         }
         var title = $scope.DocumentMeta.Content.substring(0, 8);
@@ -145,10 +174,10 @@ myApp.controller('ServiceController', function ($scope, $http) {
     }
     $scope.showStatus = function (text) {
         $scope.StatusText = text;
-        jQuery("#statusText").fadeIn(400);
+        $scope.showTooltip("status");
     }
     $scope.hideStatus = function () {
-        jQuery("#statusText").fadeOut(400);
+        $scope.hideTooltip();
     }
     $scope.getUrlParameters = function () {
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -201,30 +230,37 @@ myApp.controller('ServiceController', function ($scope, $http) {
             },
             error: function (data) {
                 results = [];
-                jQuery("#errorBox").fadeIn(1400, function () {
-                    jQuery("#errorBox").delay(4000);
-                    jQuery("#errorBox").fadeOut(1400);
-                });
+            //    jQuery("#errorBox").fadeIn(1400, function () {
+            //        jQuery("#errorBox").delay(4000);
+            //        jQuery("#errorBox").fadeOut(1400);
+            //});
+        $scope.showTooltip("error");
                 return [];
             }
         });
     }
-    $scope.showOrHideInfoBox = function () {
-        if (jQuery("#InfoBox").css("display") != "none") {
-            jQuery("#InfoBox").fadeOut();
-        }
-        else {
-            jQuery("#InfoBox").fadeIn();
-        }
+    $scope.toggleInfoBox = function () {
+        //if (jQuery("#InfoBox").css("display") != "none")
+        //    jQuery("#InfoBox").fadeOut();
+        //else
+        //    jQuery("#InfoBox").fadeIn();
+        if(!$scope.tooltip.information)
+            $scope.showTooltip("information");
+        else
+            $scope.hideTooltip();
     }
-    $scope.showOrHideStatsBox = function () {
+    $scope.toggleStatsBox = function () {
         $scope.getStats();
-        if (jQuery("#StatusBox").css("display") != "none") {
-            jQuery("#StatusBox").fadeOut();
-        }
-        else {
-            jQuery("#StatusBox").fadeIn();
-        }
+        if (!$scope.tooltip.statistics)
+            $scope.showTooltip("statistics");
+        else
+            $scope.hideTooltip();
+        //if (jQuery("#StatusBox").css("display") != "none") {
+        //    jQuery("#StatusBox").fadeOut();
+        //}
+        //else {
+        //    jQuery("#StatusBox").fadeIn();
+        //}
     }
     $scope.drawStats = function (s1) {
         var myvalues = s1;
@@ -265,49 +301,58 @@ myApp.controller('ServiceController', function ($scope, $http) {
  *
  * Usage: <textarea auto-grow></textarea>
  */
-myApp.directive('autoGrow', function() {
+myApp.directive("autoGrow", function() {
     return function(scope, element, attr){
         var minHeight = element[0].offsetHeight,
-			paddingLeft = element.css('paddingLeft'),
-			paddingRight = element.css('paddingRight');
+			paddingLeft = element.css("paddingLeft"),
+			paddingRight = element.css("paddingRight");
  
-        var $shadow = angular.element('<div></div>').css({
-            position: 'absolute',
+        var $shadow = angular.element("<div></div>").css({
+            position: "absolute",
             top: -10000,
             left: -10000,
             width: element[0].offsetWidth - parseInt(paddingLeft || 0) - parseInt(paddingRight || 0),
-            fontSize: element.css('fontSize'),
-            fontFamily: element.css('fontFamily'),
-            lineHeight: element.css('lineHeight'),
-            padding: '10px',
-            resize: 'none'
+            fontSize: element.css("fontSize"),
+            fontFamily: element.css("fontFamily"),
+            lineHeight: element.css("lineHeight"),
+            padding: "10px",
+            resize: "none"
         });
         angular.element(document.body).append($shadow);
  
         var update = function() {
             var times = function(string, number) {
-                for (var i = 0, r = ''; i < number; i++) {
+                for (var i = 0, r = ""; i < number; i++) {
                     r += string;
                 }
                 return r;
             }
  
-            var val = element.val().replace(/</g, '&lt;')
-				.replace(/>/g, '&gt;')
-				.replace(/&/g, '&amp;')
-				.replace(/\n$/, '<br/>&nbsp;')
-				.replace(/\n/g, '<br/>')
-				.replace(/\s{2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' ' });
+            var val = element.val().replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;")
+				.replace(/&/g, "&amp;")
+				.replace(/\n$/, "<br/>&nbsp;")
+				.replace(/\n/g, "<br/>")
+				.replace(/\s{2,}/g, function(space) { return times("&nbsp;", space.length - 1) + " " });
             $shadow.html(val);
  
-            element.css('height', Math.max($shadow[0].offsetHeight + 10 /* the "threshold" */, minHeight) + 'px');
+            element.css("height", Math.max($shadow[0].offsetHeight + 10 /* the "threshold" */, minHeight) + "px");
         }
 		
         if(attr.ngModel){
             scope.$watch(attr.ngModel, update);
         }
  
-        element.bind('keyup', update);
+        element.bind("keyup", update);
         update();
     }
 });
+
+
+
+
+
+
+
+
+

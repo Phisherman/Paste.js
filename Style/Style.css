@@ -77,83 +77,18 @@ div#footer {
     font-size: small;
 }
 
-div#downloadBox {
-    display: inline-block;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    margin: auto;
-    padding: 5px;
-    display: none;
-    box-shadow: 7px 7px 27px 0px rgba(50, 50, 50, 0.19);
-    background-color: white;
-}
-
-div#infoBox {
-    display: inline-block;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 250px;
-    height: 250px;
-    margin: auto;
-    padding: 5px;
-    display: none;
-    box-shadow: 7px 7px 27px 0px rgba(50, 50, 50, 0.19);
-    border-radius: 20px;
-    text-align: center;
-    background-color: white;
-}
-
-div#StatusBox {
-    display: inline-block;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 250px;
-    height: 250px;
-    margin: auto;
-    padding: 5px;
-    display: none;
-    box-shadow: 7px 7px 27px 0px rgba(50, 50, 50, 0.19);
-    border-radius: 20px;
-    text-align: center;
-    background-color: white;
-}
-
-div#errorBox {
-    display: inline-block;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 250px;
-    height: 250px;
-    margin: auto;
-    background-color: rgb(238, 142, 142);
-    padding: 10px;
-    display: none;
-    box-shadow: 7px 7px 27px 0px rgba(50, 50, 50, 0.19);
+#tooltip {
+	height: 200px;
+	display: none;
+	background: white;
+    margin-top: 15px;
+    border-top: 2px solid rgb(248, 248, 248);
 }
 
 p#quote {
     font-family: Courier;
     font-style: italic;
     font-size: small;
-}
-
-div#downloadBox h2 {
-    font-size: medium;
-    text-align: center;
 }
 div#statusText {
     position: absolute;
@@ -169,4 +104,8 @@ span#AppName {
     font-size: 25px;
     margin-left: 5px;
     color: #057AAD;
+}
+
+.centerText {
+    text-align: center;
 }
