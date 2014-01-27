@@ -57,10 +57,10 @@ textarea#editor {
     resize: none;
     word-wrap: break-word;
     width: 100%;
-    transition: 0.5s;
-    -moz-transition: 0.5s;
-    -webkit-transition: 0.5s;
-    -o-transition: 0.5s;
+    transition: 0.25s;
+    -moz-transition: 0.25s;
+    -webkit-transition: 0.25s;
+    -o-transition: 0.25s;
 }
 
 textarea:hover, textarea:focus, input:focus {
