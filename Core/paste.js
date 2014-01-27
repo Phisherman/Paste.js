@@ -7,7 +7,7 @@ myApp.controller('ServiceController', function ($scope, $http) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.0.3 beta"
+        VERSION: "1.0.4 beta"
     };
     //Document properties
     $scope.DocumentMeta = {

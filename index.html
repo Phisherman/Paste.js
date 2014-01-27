@@ -21,6 +21,7 @@
         <a ng-href="index.html" target="_blank"><i class="fa fa-plus"></i> New</a>
         <a href="" ng-click="showOrHideStatsBox()"><i class="fa fa-bar-chart-o"></i> Stats</a>
         <a href="" ng-click="showOrHideInfoBox()"><i class="fa fa-info"></i> Info</a>
+		{{DocumentMeta.isReadOnly === true ? "readonly" : ""}}
     </div>
     <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideDownloadBox()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
     <div id="downloadBox">
