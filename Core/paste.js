@@ -2,8 +2,54 @@
 * Paste.js - paste and share documents with links
 * Version 1.0.2 beta
 */
-var myApp = angular.module('Paste.js', []);
-myApp.controller('ServiceController', function ($scope, $http) {
+var myApp = angular.module('Paste.js', [], function ($httpProvider) {
+    // code from: http://victorblog.com/2012/12/20/make-angularjs-http-service-behave-like-jquery-ajax/
+    // Use x-www-form-urlencoded Content-Type
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+    // Override $http service's default transformRequest
+    $httpProvider.defaults.transformRequest = [function (data) {
+        /**
+         * The workhorse; converts an object to x-www-form-urlencoded serialization.
+         * @param {Object} obj
+         * @return {String}
+         */
+        var param = function (obj) {
+            var query = '';
+            var name, value, fullSubName, subName, subValue, innerObj, i;
+
+            for (name in obj) {
+                value = obj[name];
+
+                if (value instanceof Array) {
+                    for (i = 0; i < value.length; ++i) {
+                        subValue = value[i];
+                        fullSubName = name + '[' + i + ']';
+                        innerObj = {};
+                        innerObj[fullSubName] = subValue;
+                        query += param(innerObj) + '&';
+                    }
+                }
+                else if (value instanceof Object) {
+                    for (subName in value) {
+                        subValue = value[subName];
+                        fullSubName = name + '[' + subName + ']';
+                        innerObj = {};
+                        innerObj[fullSubName] = subValue;
+                        query += param(innerObj) + '&';
+                    }
+                }
+                else if (value !== undefined && value !== null) {
+                    query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+                }
+            }
+
+            return query.length ? query.substr(0, query.length - 1) : query;
+        };
+
+        return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
+    }];
+});
+myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
@@ -17,7 +63,8 @@ myApp.controller('ServiceController', function ($scope, $http) {
         Content: "Welcome to " + $scope.APP.NAME + "."
     };
     //Globals
-    $scope.isBoxOpen = false;
+    $scope.isSaving = false;
+	$scope.textChanged = false;
     $scope.StatusText = "Idle";
     $scope.willDeletePad = false;
     $scope.PadDeletionDuration = 80;
@@ -59,114 +106,67 @@ myApp.controller('ServiceController', function ($scope, $http) {
     };
     $scope.refreshTitle = function (newname) {
         $scope.DocumentMeta.Title = newname;
-    }
+    };
     $scope.toggleDownloadBox = function () {
-        if ($scope.DocumentMeta.isSaved === false && $scope.DocumentMeta.isReadOnly === false) {
-            console.log("store isn't saved");
-            if (!$scope.storePad()) {
-                $scope.showTooltip("error");
-                //jQuery("#errorBox").fadeIn(1400, function () {
-                //    jQuery("#errorBox").delay(4000);
-                //    jQuery("#errorBox").fadeOut(1400);
-                //});
-                return;
-            }
-        }
-        if (!$scope.tooltip.download)
-            $scope.showTooltip("download");
-        else
-            $scope.hideTooltip();
-        //if ($scope.isBoxOpen) {
-        //    jQuery("#downloadBox").fadeOut();
-        //    $scope.isBoxOpen = false;
-        //}
-        //else {
-        //    jQuery("#downloadBox").fadeIn();
-        //    $scope.isBoxOpen = true;
-        //}
+		$scope.save();
+		if($scope.tooltip.download)
+			$scope.hideTooltip();
+		else
+			$scope.showTooltip("download");
     }
-    $scope.hideDownloadBox = function () {
-        $scope.resetTooltips();
-        $scope.hideStatus();
-    }
-    $scope.storePad = function () {
-        var stored = $scope.savePad();
-        console.log(stored);
-        if (stored.length != 0) {
-            if ($scope.EditMode === false && $scope.isReadOnly === true) {
-                $scope.DocumentMeta.Guid = stored[0];
-                $scope.DocumentMeta.PrivateGuid = stored[0];
-            }
-            else if ($scope.EditMode) {
-                $scope.DocumentMeta.Guid = stored[0];
-                $scope.DocumentMeta.PrivateGuid = stored[1];
-            }
-            else {
-                $scope.DocumentMeta.Guid = stored[0];
-                $scope.DocumentMeta.PrivateGuid = stored[1];
-            }
-            return true;
-        }
-        return false;
-    }
+    $scope.save = function () {
+		if($scope.textChanged){
+			if ($scope.DocumentMeta.isSaved === false) {
+				$scope.savePad();
+				console.log("saved");
+			} else {
+				$scope.updatePad();
+				console.log("updated");
+			}
+		}
+    };
+    $scope.saveDebounced = debounce($scope.save, 2000, false);
     $scope.savePad = function () {
-        var results = [];
-        $scope.DocumentMeta.CreationDate = new Date();
-        if ($scope.EditMode === false && (!$scope.DocumentMeta.Guid || !$scope.DocumentMeta.PrivateGuid)) {
-            jQuery.ajax({
-                global: false,
-                async: false,
-                type: "POST",
-                cache: false,
-                dataType: "json",
-                data: ({
-                    action: 'read',
-                    content: $scope.DocumentMeta.Content,
-                    date: $scope.DocumentMeta.CreationDate.toISOString().slice(0, 19).replace('T', ' '),
-                }),
-                url: $scope.datalayer + $scope.taskParam.savePad,
-                success: function (data) {
-                    results = data;
-                },
-                error: function (data) {
-                    results = [];
-                    $scope.DocumentMeta.ErrorMessage = data.responseText;
-                }
+        $scope.isSaving = true;
+        var data = {
+            action: "read",
+            content: $scope.DocumentMeta.Content,
+            date: new Date().toISOString().slice(0, 19).replace("T", " "),
+        };
+        $http.post($scope.datalayer + $scope.taskParam.savePad, data)
+            .success(function (data) {
+                $scope.isSaving = false;
+				$scope.textChanged = false;
+                $scope.DocumentMeta.isSaved = true;
+                $scope.DocumentMeta.ReadOnlyGuid = data[0];
+                $scope.DocumentMeta.EditableGuid = data[1];
+            }).error(function () {
+                $scope.isSaving = false;
+                alert("Error!");
             });
-            $scope.showStatus("Pad saved " + $scope.DocumentMeta.CreationDate.toISOString());
-        }
-        else {
-            jQuery.ajax({
-                global: false,
-                async: false,
-                type: "POST",
-                cache: false,
-                dataType: "json",
-                data: ({
-                    action: 'read',
-                    content: $scope.DocumentMeta.Content,
-                    PrivateGuid: $scope.DocumentMeta.PrivateGuid,
-                    date: $scope.DocumentMeta.CreationDate.toISOString().slice(0, 19).replace('T', ' '),
-                }),
-                url: $scope.datalayer + $scope.taskParam.updatePad,
-                success: function (data) {
-                    results = data;
-                },
-                error: function (data) {
-                    results = [];
-                    $scope.DocumentMeta.ErrorMessage = data.responseText;
-                }
-            });
-            $scope.showStatus("Pad updated " + $scope.DocumentMeta.CreationDate.toISOString());
-        }
-        return results;
-    }
+    };
+    $scope.updatePad = function () {
+        $scope.isSaving = true;
+        var data = {
+            action: "read",
+            content: $scope.DocumentMeta.Content,
+            PrivateGuid: $scope.DocumentMeta.EditableGuid,
+            date: new Date().toISOString().slice(0, 19).replace("T", " ")
+        };
+        $http.post($scope.datalayer + $scope.taskParam.updatePad, data)
+        .success(function (data) {
+            $scope.isSaving = false;
+			$scope.textChanged = false;
+            $scope.DocumentMeta.ReadOnlyGuid = data[0]; //should be
+            $scope.DocumentMeta.EditableGuid = data[1]; //unneccessary
+        }).error(function () {
+            $scope.isSaving = false;
+        });
+    };
     $scope.setTitle = function () {
         if ($scope.DocumentMeta.Content === null) {
             $scope.DocumentMeta.ErrorMessage = "The pad is not existing";
             $scope.showTooltip("error");
-            //jQuery("#errorBox").fadeIn(1400, function () {
-            //});
             return;
         }
         var title = $scope.DocumentMeta.Content.substring(0, 8);
@@ -175,9 +175,6 @@ myApp.controller('ServiceController', function ($scope, $http) {
     $scope.showStatus = function (text) {
         $scope.StatusText = text;
         $scope.showTooltip("status");
-    }
-    $scope.hideStatus = function () {
-        $scope.hideTooltip();
     }
     $scope.getUrlParameters = function () {
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -204,7 +201,7 @@ myApp.controller('ServiceController', function ($scope, $http) {
             dataType: "json",
             data: ({
                 action: 'read',
-                pad: pad,
+                pad: pad
             }),
             url: $scope.datalayer + $scope.taskParam.openPad,
             success: function (data) {
@@ -213,12 +210,12 @@ myApp.controller('ServiceController', function ($scope, $http) {
                     if (edit == false) {
                         $scope.DocumentMeta.isReadOnly = true;
                         $scope.DocumentMeta.isSaved = true;
-                        $scope.DocumentMeta.Guid = pad;
-                        $scope.DocumentMeta.PrivateGuid = null;
+                        $scope.DocumentMeta.ReadOnlyGuid = pad;
+                        $scope.DocumentMeta.EditableGuid = null;
                         $scope.EditMode = false;
                     }
                     else {
-                        $scope.DocumentMeta.PrivateGuid = pad;
+                        $scope.DocumentMeta.EditableGuid = pad;
                         $scope.EditMode = true;
                     }
                 }
@@ -230,20 +227,12 @@ myApp.controller('ServiceController', function ($scope, $http) {
             },
             error: function (data) {
                 results = [];
-            //    jQuery("#errorBox").fadeIn(1400, function () {
-            //        jQuery("#errorBox").delay(4000);
-            //        jQuery("#errorBox").fadeOut(1400);
-            //});
         $scope.showTooltip("error");
                 return [];
             }
         });
     }
     $scope.toggleInfoBox = function () {
-        //if (jQuery("#InfoBox").css("display") != "none")
-        //    jQuery("#InfoBox").fadeOut();
-        //else
-        //    jQuery("#InfoBox").fadeIn();
         if(!$scope.tooltip.information)
             $scope.showTooltip("information");
         else
@@ -255,12 +244,6 @@ myApp.controller('ServiceController', function ($scope, $http) {
             $scope.showTooltip("statistics");
         else
             $scope.hideTooltip();
-        //if (jQuery("#StatusBox").css("display") != "none") {
-        //    jQuery("#StatusBox").fadeOut();
-        //}
-        //else {
-        //    jQuery("#StatusBox").fadeIn();
-        //}
     }
     $scope.drawStats = function (s1) {
         var myvalues = s1;
@@ -277,30 +260,44 @@ myApp.controller('ServiceController', function ($scope, $http) {
             $scope.drawStats(data);
         });
     }
-    $scope.getTicks = function () {
-        $http.get($scope.datalayer + $scope.taskParam.getTicks).success(function (data) {
-            return data;
-        }).error(function () {
-            return [];
-        });
-    }
+
+    $scope.$watch("DocumentMeta.Content", function (newVal, oldVal) {
+        if (oldVal !== newVal) {
+			$scope.textChanged = true;
+            $scope.saveDebounced();
+        }
+    });
 });
 
-/*
- * Adapted from: http://code.google.com/p/gaequery/source/browse/trunk/src/static/scripts/jquery.autogrow-textarea.js
- *
- * Works nicely with the following styles:
- * textarea {
- *	resize: none;
- *  word-wrap: break-word;
- *	transition: 0.05s;
- *	-moz-transition: 0.05s;
- *	-webkit-transition: 0.05s;
- *	-o-transition: 0.05s;
- * }
- *
- * Usage: <textarea auto-grow></textarea>
- */
+//code from https://gist.github.com/adamalbrecht/7226278
+myApp.factory("debounce", function ($timeout, $q) {
+    return function (func, wait, immediate) {
+        var timeout;
+        var deferred = $q.defer();
+        return function () {
+            var context = this, args = arguments;
+            var later = function () {
+                timeout = null;
+                if (!immediate) {
+                    deferred.resolve(func.apply(context, args));
+                    deferred = $q.defer();
+                }
+            };
+            var callNow = immediate && !timeout;
+            if (timeout) {
+                $timeout.cancel(timeout);
+            }
+            timeout = $timeout(later, wait);
+            if (callNow) {
+                deferred.resolve(func.apply(context, args));
+                deferred = $q.defer();
+            }
+            return deferred.promise;
+        };
+    };
+});
+
+//code from http://code.google.com/p/gaequery/source/browse/trunk/src/static/scripts/jquery.autogrow-textarea.js
 myApp.directive("autoGrow", function() {
     return function(scope, element, attr){
         var minHeight = element[0].offsetHeight,
