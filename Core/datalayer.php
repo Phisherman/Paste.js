@@ -1,7 +1,7 @@
 <?php
 	error_reporting(E_ALL);
-	$connect = mysqli_connect("localhost", "", "") or die("Error: 005 ".mysqli_error());
-	mysqli_select_db($connect,"Paste") or die("Error: 006 ".mysqli_error()); 	
+	$connect = mysqli_connect("localhost", "root", "") or die("Error: 005 ".mysqli_error());
+	mysqli_select_db($connect,"pasteJs") or die("Error: 006 ".mysqli_error()); 	
 	if (isset($_POST["method"])){
 		mysqli_query($connect,"SET NAMES 'utf8'");
 		mysqli_query($connect,"SET CHARACTER SET 'utf8'");
@@ -19,7 +19,7 @@
 				echo json_encode($results);
 				break;	
 			case '0x2':				
-				$results = loadPad($connect,$_POST["pad"]);			
+				$results = loadPad($connect,$_POST["pad"]);		
 				$encode =  json_encode($results);
 				echo $encode;
 				break;	

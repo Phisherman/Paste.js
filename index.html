@@ -24,14 +24,19 @@
         {{DocumentMeta.isReadOnly === true ? "readonly" : ""}}
         <div id="tooltip" class="centerText">
             <div ng-show="tooltip.download">
-                <h1 class="centerText">Download this Pad</h1>
-                <p>You can share this file using following links.</p>
-                <p ng-show="willDeletePad">This pad will be deleteted within {{ PadDeletionDuration }} days.</p>
-                <p ng-show="!willDeletePad">There is no lifetime limit for this pad.</p>
-                <p class="centerText">
-                <a href="index.html?pad={{DocumentMeta.Guid}}">readonly pad</a>
-                <a ng-show="EditMode === true || DocumentMeta.isReadOnly === false" href="index.html?epad={{DocumentMeta.PrivateGuid}}">editable pad</a>
-            </p>
+                <div ng-hide="isSaving">
+                    <h1 class="centerText">Download this Pad</h1>
+                    <p>You can share this file using following links.</p>
+                    <p ng-show="willDeletePad">This pad will be deleteted within {{ PadDeletionDuration }} days.</p>
+                    <p ng-show="!willDeletePad">There is no lifetime limit for this pad.</p>
+                    <p class="centerText">
+                        <a href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}">readonly pad</a>
+                        <a ng-show="EditMode === true || DocumentMeta.isReadOnly === false" href="index.html?epad={{DocumentMeta.EditableGuid}}">editable pad</a>
+                    </p>
+                </div>
+                <div ng-show="isSaving">
+                    <h1>Speichert...</h1>
+                </div>
             </div>
             <div ng-show="tooltip.error">
                 There was an error while saving your document.
@@ -58,6 +63,6 @@
             </div>
         </div>
     </div>
-    <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideDownloadBox()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
+    <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideTooltip()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
 </body>
 </html>
