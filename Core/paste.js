@@ -53,7 +53,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.0.5 beta"
+        VERSION: "1.1.0 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
