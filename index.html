@@ -14,7 +14,7 @@
     <script type="text/javascript">
         jQuery.noConflict();
     </script>
-    <p id="status" data-ng-init="getUrlParameters()"></p>
+    <p id="status" ng-init="getUrlParameters()"></p>
     <div id="parentNav">
         <a id="AppName" ng-href="index.html"><span id="AppName"> <i class="fa fa-paste"></i> {{ APP.NAME }} </span></a>
         <a href="" ng-click="toggleDownloadBox()"><i class="fa fa-hdd-o"></i> Download</a>
@@ -35,7 +35,7 @@
                     </p>
                 </div>
                 <div ng-show="isSaving">
-                    <h1>Speichert...</h1>
+                    <h1>saving...</h1>
                 </div>
             </div>
             <div ng-show="tooltip.error">
@@ -62,6 +62,7 @@
                 <i class="fa fa-hdd-o"></i> {{StatusText}}
             </div>
         </div>
+        <p clas="centerText" id="isSavingHint">saving...</p>
     </div>
     <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideTooltip()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
 </body>

@@ -53,7 +53,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.1.0 beta"
+        VERSION: "1.1.2 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
@@ -115,7 +115,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
 			$scope.showTooltip("download");
     }
     $scope.save = function () {
-		if($scope.textChanged){
+		if($scope.textChanged || $scope.DocumentMeta.isSaved === false && $scope.isSaving === false){
 			if ($scope.DocumentMeta.isSaved === false) {
 				$scope.savePad();
 				console.log("saved");
@@ -260,7 +260,15 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
             $scope.drawStats(data);
         });
     }
-
+    $scope.$watch("isSaving", function (newVal, oldVal) {
+        if (oldVal !== newVal) {
+            if (newVal) {
+                jQuery('#isSavingHint').fadeIn(400);
+            } else {
+                jQuery('#isSavingHint').fadeOut(200);
+            }
+        }
+    });
     $scope.$watch("DocumentMeta.Content", function (newVal, oldVal) {
         if (oldVal !== newVal) {
 			$scope.textChanged = true;

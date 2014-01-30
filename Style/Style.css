@@ -48,11 +48,14 @@ div#parentNav a {
         color: #3CA1CE;
     }
 
-textarea#editor {
+textarea {
     margin-top: 50px;
 	min-height: 200px;
     padding: 10px;
-    border: 0;
+    border: 2px solid rgb(248, 248, 248);
+    border-top: 0;
+    border-bottom: 0;
+    border-color: rgba(0,0,0,0);
     outline: 0;
     overflow: hidden;
     resize: none;
@@ -65,7 +68,7 @@ textarea#editor {
 }
 
 textarea:hover, textarea:focus, input:focus {
-    background: rgb(250, 250, 250);
+    border-color: rgba(241, 241, 241, 1);
 }
 
 div#footer {
@@ -104,6 +107,19 @@ span#AppName {
     font-size: 25px;
     margin-left: 5px;
     color: #057AAD;
+}
+
+#isSavingHint {
+    color: rgb(88, 88, 88);
+    display: none;
+    right: 50%;
+    position: fixed;
+    bottom: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 0 0 3px 3px;
+    border: 1px solid rgb(243, 243, 243);
+    box-shadow: 2px 3px 17px #F1F1F1;
 }
 
 .centerText {
