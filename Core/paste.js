@@ -53,7 +53,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.1.2 beta"
+        VERSION: "1.1.3 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
@@ -64,6 +64,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     };
     //Globals
     $scope.isSaving = false;
+    $scope.textChangedDuringSaving = false;
 	$scope.textChanged = false;
     $scope.StatusText = "Idle";
     $scope.willDeletePad = false;
@@ -136,10 +137,16 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
         $http.post($scope.datalayer + $scope.taskParam.savePad, data)
             .success(function (data) {
                 $scope.isSaving = false;
-				$scope.textChanged = false;
                 $scope.DocumentMeta.isSaved = true;
                 $scope.DocumentMeta.ReadOnlyGuid = data[0];
                 $scope.DocumentMeta.EditableGuid = data[1];
+                if ($scope.textChangedDuringSaving === true) {
+                    console.log("text changed due saving");
+                    $scope.textChangedDuringSaving = false;
+                    $scope.saveDebounced();
+                } else {
+                    $scope.textChanged = false;
+                }
             }).error(function () {
                 $scope.isSaving = false;
                 alert("Error!");
@@ -156,9 +163,14 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
         $http.post($scope.datalayer + $scope.taskParam.updatePad, data)
         .success(function (data) {
             $scope.isSaving = false;
-			$scope.textChanged = false;
-            $scope.DocumentMeta.ReadOnlyGuid = data[0]; //should be
-            $scope.DocumentMeta.EditableGuid = data[1]; //unneccessary
+            if ($scope.textChangedDuringSaving === true) {
+                console.log("text changed due saving");
+                $scope.textChangedDuringSaving = false;
+                $scope.saveDebounced();       
+            } else {
+                console.log("normal save");
+                $scope.textChanged = false;
+            }
         }).error(function () {
             $scope.isSaving = false;
         });
@@ -271,7 +283,9 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     });
     $scope.$watch("DocumentMeta.Content", function (newVal, oldVal) {
         if (oldVal !== newVal) {
-			$scope.textChanged = true;
+            $scope.textChanged = true;
+            if ($scope.isSaving === true)
+                $scope.textChangedDuringSaving = true;
             $scope.saveDebounced();
         }
     });
@@ -325,7 +339,7 @@ myApp.directive("autoGrow", function() {
         });
         angular.element(document.body).append($shadow);
  
-        var update = function() {
+        var update = function () {
             var times = function(string, number) {
                 for (var i = 0, r = ""; i < number; i++) {
                     r += string;
