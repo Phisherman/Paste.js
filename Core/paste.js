@@ -53,7 +53,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.1.3 beta"
+        VERSION: "1.1.5 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
@@ -116,13 +116,13 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
 			$scope.showTooltip("download");
     }
     $scope.save = function () {
-		if($scope.textChanged || $scope.DocumentMeta.isSaved === false && $scope.isSaving === false){
+		if(($scope.textChanged === true || $scope.DocumentMeta.isSaved === false) && $scope.isSaving === false){
 			if ($scope.DocumentMeta.isSaved === false) {
+				console.log("invoke saving");
 				$scope.savePad();
-				console.log("saved");
 			} else {
+				console.log("invoke update");
 				$scope.updatePad();
-				console.log("updated");
 			}
 		}
     };
@@ -140,8 +140,9 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
                 $scope.DocumentMeta.isSaved = true;
                 $scope.DocumentMeta.ReadOnlyGuid = data[0];
                 $scope.DocumentMeta.EditableGuid = data[1];
+				console.log("saving finished");
                 if ($scope.textChangedDuringSaving === true) {
-                    console.log("text changed due saving");
+                    console.log("text changed due saving process\ninvoke new debounced saving");
                     $scope.textChangedDuringSaving = false;
                     $scope.saveDebounced();
                 } else {
@@ -163,12 +164,12 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
         $http.post($scope.datalayer + $scope.taskParam.updatePad, data)
         .success(function (data) {
             $scope.isSaving = false;
+			console.log("update finished");
             if ($scope.textChangedDuringSaving === true) {
-                console.log("text changed due saving");
+                console.log("text changed due update process\ninvoke new debounced saving");
                 $scope.textChangedDuringSaving = false;
                 $scope.saveDebounced();       
             } else {
-                console.log("normal save");
                 $scope.textChanged = false;
             }
         }).error(function () {
