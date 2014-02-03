@@ -1,15 +1,19 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro);
+@import url(http://fonts.googleapis.com/css?family=Raleway:300);
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+
 body {
-    font-family: 'Yanone Kaffeesatz', sans-serif;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 15px;
     width: 800px;
     margin: 0 auto;
 }
 
 div#parentNav {
-    padding: 5px 10px;
-    border-radius: 0 0 3px 3px;
+    padding: 0 10px;
     border: 1px solid rgb(243, 243, 243);
     border-top: 0;
-    box-shadow: 2px 3px 17px #F1F1F1;
+    box-shadow: 0 0 5px #F1F1F1;
     position: fixed;
     background: white;
 }
@@ -31,24 +35,27 @@ div#parentNav a {
     color: #057AAD;
 }
 
-    div#parentNav a:link {
-        color: #c91a2e;
-    }
+#parentNav ul{
+    padding: 0;
+    margin: 0;
+}
 
-    div#parentNav a:visited {
-        color: #057AAD;
-    }
+#parentNav ul:after{
+    clear: both;
+}
 
-    div#parentNav a:hover {
-        color: #2D4A57;
-        text-decoration: none;
-    }
+#parentNav li{
+    list-style-type: none;
+    display: inline-block;
+}
 
-    div#parentNav a:active {
-        color: #3CA1CE;
-    }
+#parentNav li a{
+    padding: 10px;
+    display: block;
+}
 
 textarea {
+    font-family: 'Courier New';
     margin-top: 50px;
 	min-height: 200px;
     padding: 10px;
@@ -68,7 +75,7 @@ textarea {
 }
 
 textarea:hover, textarea:focus, input:focus {
-    border-color: rgba(241, 241, 241, 1);
+    border-color: rgba(248, 248, 248, 1);
 }
 
 div#footer {
@@ -84,8 +91,21 @@ div#footer {
 	height: 200px;
 	display: none;
 	background: white;
-    margin-top: 15px;
+    margin-top: 5px;
     border-top: 2px solid rgb(248, 248, 248);
+}
+
+#download .downloadLink{
+    width: 50%;
+    padding: 0;
+    display: inline-block;
+    float: left;
+    padding: 85px 0;
+    background: transparent;
+}
+
+#download .downloadLink:hover{
+    background: rgb(248, 248, 248);
 }
 
 p#quote {
@@ -104,6 +124,7 @@ div#statusText {
 }
 
 span#AppName {
+    font-family: 'Raleway', sans-serif;
     font-size: 25px;
     margin-left: 5px;
     color: #057AAD;
@@ -117,9 +138,9 @@ span#AppName {
     bottom: 10px;
     background: white;
     padding: 10px 15px;
-    border-radius: 0 0 3px 3px;
+    border-radius: 0;
     border: 1px solid rgb(243, 243, 243);
-    box-shadow: 2px 3px 17px #F1F1F1;
+    box-shadow: 0 1px 5px #F1F1F1;
 }
 
 .centerText {

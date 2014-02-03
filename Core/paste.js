@@ -53,7 +53,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.1.5 beta"
+        VERSION: "1.1.7 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
@@ -326,7 +326,6 @@ myApp.directive("autoGrow", function() {
         var minHeight = element[0].offsetHeight,
 			paddingLeft = element.css("paddingLeft"),
 			paddingRight = element.css("paddingRight");
- 
         var $shadow = angular.element("<div></div>").css({
             position: "absolute",
             top: -10000,
@@ -335,7 +334,7 @@ myApp.directive("autoGrow", function() {
             fontSize: element.css("fontSize"),
             fontFamily: element.css("fontFamily"),
             lineHeight: element.css("lineHeight"),
-            padding: "10px",
+            padding: element.css("padding"),
             resize: "none"
         });
         angular.element(document.body).append($shadow);

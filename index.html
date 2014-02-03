@@ -6,33 +6,38 @@
     <script type="text/javascript" src="./Core/paste.js"></script>
     <script type="text/javascript" language="javascript" src="./Lib/jquery.sparkline.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./Style/Style.css">
-    <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,300' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="./Lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="./Lib/foundation-icons/foundation-icons.css">
 </head>
 <body>
     <script type="text/javascript">
         jQuery.noConflict();
     </script>
     <p id="status" ng-init="getUrlParameters()"></p>
-    <div id="parentNav">
-        <a id="AppName" ng-href="index.html"><span id="AppName"> <i class="fa fa-paste"></i> {{ APP.NAME }} </span></a>
-        <a href="" ng-click="toggleDownloadBox()"><i class="fa fa-hdd-o"></i> Download</a>
-        <a ng-href="index.html" target="_blank"><i class="fa fa-plus"></i> New</a>
-        <a href="" ng-click="toggleStatsBox()"><i class="fa fa-bar-chart-o"></i> Stats</a>
-        <a href="" ng-click="toggleInfoBox()"><i class="fa fa-info"></i> Info</a>
+    <div id="parentNav">  
+        <ul>
+            <li>
+                <a id="AppName" href="index.html"><span id="AppName">{{ APP.NAME }}</span></a>
+            </li>
+            <li>
+                <a href="" ng-click="toggleDownloadBox()"><i class="fi-download"></i> DOWNLOAD</a>
+            </li>
+            <li>
+                <a ng-href="index.html" data-target="_blank"><i class="fi-asterisk"></i> NEW PAD</a>
+            </li>
+            <li>
+                <a href="" ng-click="toggleInfoBox()"><i class="fi-info"></i> INFO</a>
+            </li>
+            <!--<li>
+                <a href="" ng-click="toggleStatsBox()"><i class="fi-"></i> Stats</a>
+            </li>-->
+        </ul>
         {{DocumentMeta.isReadOnly === true ? "readonly" : ""}}
         <div id="tooltip" class="centerText">
-            <div ng-show="tooltip.download">
+            <div ng-show="tooltip.download" id="download">
                 <div ng-hide="isSaving">
-                    <h1 class="centerText">Download this Pad</h1>
-                    <p>You can share this file using following links.</p>
                     <p ng-show="willDeletePad">This pad will be deleteted within {{ PadDeletionDuration }} days.</p>
-                    <p ng-show="!willDeletePad">There is no lifetime limit for this pad.</p>
-                    <p class="centerText">
-                        <a href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}">readonly pad</a>
-                        <a ng-show="EditMode === true || DocumentMeta.isReadOnly === false" href="index.html?epad={{DocumentMeta.EditableGuid}}">editable pad</a>
-                    </p>
+                    <a class="downloadLink" href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}">readonly pad</a>
+                    <a class="downloadLink" ng-show="EditMode === true || DocumentMeta.isReadOnly === false" href="index.html?epad={{DocumentMeta.EditableGuid}}">editable pad</a>
                 </div>
                 <div ng-show="isSaving">
                     <h1>saving...</h1>
@@ -53,16 +58,16 @@
                     License: See LICENSE for details
                 </p>
             </div>
-            <div ng-show="tooltip.statistics">
+            <!--<div ng-show="tooltip.statistics">
                 <h1 class="centerText">Statistics</h1>
                 <p>Created pads (last 7 days)</p>
                 <div id="stats"></div>
-            </div>
+            </div>-->
             <div id="statusText">
                 <i class="fa fa-hdd-o"></i> {{StatusText}}
             </div>
         </div>
-        <p clas="centerText" id="isSavingHint">saving...</p>
+        <p class="centerText" id="isSavingHint">saving...</p>
     </div>
     <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideTooltip()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
 </body>
