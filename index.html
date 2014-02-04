@@ -16,10 +16,13 @@
     <div id="parentNav">  
         <ul>
             <li>
-                <a id="AppName" href="index.html"><span id="AppName">{{ APP.NAME }}</span></a>
+                <a id="AppName" href="index.html"><span id="AppName">Paste.js</span></a>
             </li>
             <li>
                 <a href="" ng-click="toggleDownloadBox()"><i class="fi-share"></i> SHARE</a>
+            </li>
+            <li>
+                <a ng-class="!DocumentMeta.DownloadGuid || textChanged ? 'disabled' : ''" ng-href="./Core/datalayer.php?pad={{DocumentMeta.DownloadGuid}}&task=0x7"><i class="fi-download"></i> DOWNLOAD</a>
             </li>
             <li>
                 <a ng-href="index.html" data-target="_blank"><i class="fi-asterisk"></i> NEW PAD</a>
@@ -27,21 +30,17 @@
             <li>
                 <a href="" ng-click="toggleInfoBox()"><i class="fi-info"></i> INFO</a>
             </li>
-            <!--<li>
-                <a href="" ng-click="toggleStatsBox()"><i class="fi-"></i> Stats</a>
-            </li>-->
 			<li>{{DocumentMeta.isReadOnly === true ? "READONLY" : ""}}</li>
         </ul>
         <div id="tooltip" class="centerText">
             <div ng-show="tooltip.download" id="download">
-                <div ng-hide="isSaving">
+                <div>
                     <p ng-show="willDeletePad">This pad will be deleteted within {{ PadDeletionDuration }} days.</p>
-                    <a class="downloadLink" href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}"><i class="fi-clipboard-notes"></i> readonly pad</a>
-                    <a class="downloadLink" ng-hide="DocumentMeta.isReadOnly" href="index.html?epad={{DocumentMeta.EditableGuid}}"><i class="fi-pencil"></i> editable pad</a>
+                    <a class="share" ng-show="isSaving">saving...</a>
+                    <a class="share" ng-hide="isSaving" href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}"><i class="fi-clipboard-notes"></i> readonly pad</a>
+                    <a class="share" ng-hide="DocumentMeta.isReadOnly || isSaving" href="index.html?epad={{DocumentMeta.EditableGuid}}"><i class="fi-pencil"></i> editable pad</a>
                 </div>
-                <div ng-show="isSaving">
-                    <h1>saving...</h1>
-                </div>
+
             </div>
             <div ng-show="tooltip.error">
                 There was an error while saving your document.
@@ -64,8 +63,8 @@
                 <i class="fa fa-hdd-o"></i> {{StatusText}}
             </div>
         </div>
-        <p class="centerText" id="isSavingHint">saving...</p>
+        <!--<p class="centerText" id="isSavingHint">saving...</p>-->
     </div>
-    <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideTooltip()" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
+    <textarea data-auto-grow ng-readonly="DocumentMeta.isReadOnly" id="editor" ng-click="hideTooltip()" ng-trim="false" ng-model="DocumentMeta.Content" ng-change="setTitle()" placeholder="Write here"></textarea>
 </body>
 </html>

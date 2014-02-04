@@ -1,7 +1,7 @@
 <?php
 	error_reporting(E_ALL);
-	$connect = mysqli_connect("localhost", "", "") or die("Error: 005 ".mysqli_error());
-	mysqli_select_db($connect,"Paste") or die("Error: 006 ".mysqli_error()); 	
+	$connect = mysqli_connect("localhost", "root", "") or die("Error: 005 ".mysqli_error());
+	mysqli_select_db($connect,"pasteJs") or die("Error: 006 ".mysqli_error()); 	
 	if (isset($_POST["method"])){
 		mysqli_query($connect,"SET NAMES 'utf8'");
 		mysqli_query($connect,"SET CHARACTER SET 'utf8'");
@@ -19,7 +19,7 @@
 				echo json_encode($results);
 				break;	
 			case '0x2':				
-				$results = loadPad($connect,$_POST["pad"]);			
+				$results = loadPad($connect, $_POST["pad"]);			
 				$encode =  json_encode($results);
 				echo $encode;
 				break;	
@@ -37,7 +37,11 @@
 				break;	
 			case '0x6':
 				echo json_encode(checkInstall($connect));
-				break;												
+				break;
+			case '0x7':
+				$results = loadPad($connect, $_GET["pad"]);
+				makeDownload($results, $_GET["pad"]);
+        break;
 			default:
 				echo "wtf?";
 				break;
@@ -79,6 +83,11 @@
 			$result =html_entity_decode ($row->Content);	
 		}
 		return $result;
+	}
+	function makeDownload($text, $filename){
+		header("Content-Type: text/plain");
+		header("Content-Disposition: attachment; filename=\"$filename\"");
+		echo $text;
 	}
 	function storePad($connect,$content,$guid,$privateguid,$date){
 		$content = htmlentities(mysqli_real_escape_string($connect,$content));

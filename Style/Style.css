@@ -16,7 +16,7 @@ div#parentNav {
     box-shadow: 0 0 5px #F1F1F1;
     position: fixed;
     background: white;
-	color: rgb(189, 189, 189);
+	color: rgb(138, 138, 138);
 }
 
 div#content {
@@ -95,16 +95,16 @@ div#footer {
     border-top: 2px solid rgb(248, 248, 248);
 }
 
-#download .downloadLink{
+#download .share{
     width: 50%;
     padding: 0;
     display: inline-block;
     float: left;
-    padding: 20px 0;
+    padding: 17px 0;
     background: transparent;
 }
 
-#download .downloadLink:hover{
+#download .share:hover{
     background: rgb(248, 248, 248);
 }
 
@@ -149,4 +149,10 @@ span#AppName {
 
 .logoFont {
     font-family: 'Raleway', sans-serif;
+}
+
+.disabled {
+    color: 	rgb(138, 138, 138) !important;
+    pointer-events: none;
+    cursor: default;
 }

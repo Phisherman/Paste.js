@@ -53,14 +53,15 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.1.7 beta"
+        VERSION: "1.2.0 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
         isSaved: false,
         isReadOnly: false,
         Title: "unnamed document",
-        Content: "Welcome to " + $scope.APP.NAME + "."
+        Content: "Welcome to " + $scope.APP.NAME + ".",
+        DownloadGuid: null
     };
     //Globals
     $scope.isSaving = false;
@@ -126,7 +127,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
 			}
 		}
     };
-    $scope.saveDebounced = debounce($scope.save, 2000, false);
+    $scope.saveDebounced = debounce($scope.save, 800, false);
     $scope.savePad = function () {
         $scope.isSaving = true;
         var data = {
@@ -140,6 +141,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
                 $scope.DocumentMeta.isSaved = true;
                 $scope.DocumentMeta.ReadOnlyGuid = data[0];
                 $scope.DocumentMeta.EditableGuid = data[1];
+                $scope.DocumentMeta.DownloadGuid = data[0];
 				console.log("saving finished");
                 if ($scope.textChangedDuringSaving === true) {
                     console.log("text changed due saving process\ninvoke new debounced saving");
@@ -220,9 +222,10 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
             success: function (data) {
                 $scope.DocumentMeta.Content = data;
                 if (pad != "start") {
+                    $scope.DocumentMeta.isSaved = true;
+                    $scope.DocumentMeta.DownloadGuid = pad;
                     if (edit == false) {
                         $scope.DocumentMeta.isReadOnly = true;
-                        $scope.DocumentMeta.isSaved = true;
                         $scope.DocumentMeta.ReadOnlyGuid = pad;
                         $scope.DocumentMeta.EditableGuid = null;
                         $scope.EditMode = false;
