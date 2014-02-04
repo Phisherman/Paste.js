@@ -16,6 +16,7 @@ div#parentNav {
     box-shadow: 0 0 5px #F1F1F1;
     position: fixed;
     background: white;
+	color: rgb(189, 189, 189);
 }
 
 div#content {
@@ -88,7 +89,6 @@ div#footer {
 }
 
 #tooltip {
-	height: 200px;
 	display: none;
 	background: white;
     margin-top: 5px;
@@ -100,7 +100,7 @@ div#footer {
     padding: 0;
     display: inline-block;
     float: left;
-    padding: 85px 0;
+    padding: 20px 0;
     background: transparent;
 }
 
@@ -145,4 +145,8 @@ span#AppName {
 
 .centerText {
     text-align: center;
+}
+
+.logoFont {
+    font-family: 'Raleway', sans-serif;
 }

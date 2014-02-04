@@ -99,11 +99,11 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
         }
         var width = jQuery("div#parentNav").width();
         jQuery("#tooltip").css("width", width);
-        jQuery("#tooltip").slideDown(300);
+        jQuery("#tooltip").fadeIn(300);
     };
     $scope.hideTooltip = function () {
         $scope.resetTooltips();
-        jQuery("#tooltip").slideUp(300);
+        jQuery("#tooltip").slideUp(250);
     };
     $scope.refreshTitle = function (newname) {
         $scope.DocumentMeta.Title = newname;
@@ -289,6 +289,10 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
                 $scope.textChangedDuringSaving = true;
             $scope.saveDebounced();
         }
+    });
+
+    jQuery("#parentNav").mouseleave(function () {
+        $scope.hideTooltip();
     });
 });
 
