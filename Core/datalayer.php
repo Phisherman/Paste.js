@@ -41,7 +41,11 @@
 			case '0x7':
 				$results = loadPad($connect, $_GET["pad"]);
 				makeDownload($results, $_GET["pad"]);
-        break;
+				break;
+			case '0x8':
+				$results = getReadOnlyGUID($connect, $_POST["pad"]);
+				echo json_encode($results);
+				break;
 			default:
 				echo "wtf?";
 				break;
@@ -81,6 +85,15 @@
 		$dbresult = mysqli_query($connect,"Select Content from Pads where GUID = '$pad ' or PRIVATEGUID = '$pad' LIMIT 1");
 		while ($row = mysqli_fetch_object($dbresult)) {
 			$result =html_entity_decode ($row->Content);	
+		}
+		return $result;
+	}
+	function getReadOnlyGUID($connect, $pad){
+		$result = null;
+		$pad = mysqli_real_escape_string($connect,$pad);
+		$dbresult = mysqli_query($connect,"SELECT guid FROM Pads WHERE privateguid = '$pad' LIMIT 1");
+		while ($row = mysqli_fetch_object($dbresult)) {
+			$result = $row->guid;
 		}
 		return $result;
 	}

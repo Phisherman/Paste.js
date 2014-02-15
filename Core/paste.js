@@ -1,6 +1,6 @@
 /**
 * Paste.js - paste and share documents with links
-* Version 1.0.2 beta
+* Version 1.2.1 beta
 */
 var myApp = angular.module('Paste.js', [], function ($httpProvider) {
     // code from: http://victorblog.com/2012/12/20/make-angularjs-http-service-behave-like-jquery-ajax/
@@ -53,7 +53,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
     //Program Constants
     $scope.APP = {
         NAME: "Paste.js",
-        VERSION: "1.2.0 beta"
+        VERSION: "1.2.1 beta"
     };
     //Document properties
     $scope.DocumentMeta = {
@@ -78,7 +78,8 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
         updatePad: "?task=0x5",
         openPad: "?task=0x2",
         getTicks: "?task=0x4",
-        getStats: "?task=0x3"
+        getStats: "?task=0x3",
+        getReadOnlyGuid: "?task=0x8"
     };
     //Tooltips
     $scope.tooltip = {
@@ -214,10 +215,10 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
             type: "POST",
             cache: false,
             dataType: "json",
-            data: ({
+            data: {
                 action: 'read',
                 pad: pad
-            }),
+            },
             url: $scope.datalayer + $scope.taskParam.openPad,
             success: function (data) {
                 $scope.DocumentMeta.Content = data;
@@ -232,6 +233,7 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
                     }
                     else {
                         $scope.DocumentMeta.EditableGuid = pad;
+                        $scope.getReadOnlyGuid(pad);
                         $scope.EditMode = true;
                     }
                 }
@@ -239,15 +241,33 @@ myApp.controller('ServiceController', function ($scope, $http, debounce) {
                     $scope.DocumentMeta.isSaved = false;
                 }
                 $scope.setTitle();
-                return data;
             },
             error: function (data) {
-                results = [];
-        $scope.showTooltip("error");
-                return [];
+                $scope.showTooltip("error");
             }
         });
     }
+    $scope.getReadOnlyGuid = function (guid) {
+        jQuery.ajax({
+            global: false,
+            async: false,
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            data: {
+                action: 'read',
+                pad: guid
+            },
+            url: $scope.datalayer + $scope.taskParam.getReadOnlyGuid,
+            success: function (data) {
+                console.log(data);
+                $scope.DocumentMeta.ReadOnlyGuid = data;
+            },
+            error: function () {
+                $scope.showTooltip("error");
+            }
+        });
+    };
     $scope.toggleInfoBox = function () {
         if(!$scope.tooltip.information)
             $scope.showTooltip("information");

@@ -37,10 +37,9 @@
                 <div>
                     <p ng-show="willDeletePad">This pad will be deleteted within {{ PadDeletionDuration }} days.</p>
                     <a class="share" ng-show="isSaving">saving...</a>
-                    <a class="share" ng-hide="isSaving" href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}"><i class="fi-clipboard-notes"></i> readonly pad</a>
-                    <a class="share" ng-hide="DocumentMeta.isReadOnly || isSaving" href="index.html?epad={{DocumentMeta.EditableGuid}}"><i class="fi-pencil"></i> editable pad</a>
+                    <a class="share" ng-hide="isSaving" ng-href="index.html?pad={{DocumentMeta.ReadOnlyGuid}}"><i class="fi-clipboard-notes"></i> readonly pad</a>
+                    <a class="share" ng-hide="DocumentMeta.isReadOnly || isSaving" ng-href="index.html?epad={{DocumentMeta.EditableGuid}}"><i class="fi-pencil"></i> editable pad</a>
                 </div>
-
             </div>
             <div ng-show="tooltip.error">
                 There was an error while saving your document.
